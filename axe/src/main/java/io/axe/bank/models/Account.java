@@ -1,6 +1,7 @@
 package io.axe.bank.models;
 
 import io.axe.bank.models.enums.AccountStatus;
+import io.axe.bank.models.enums.AccountType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,9 +26,11 @@ public class Account {
     private String iban;
 
     @Enumerated(EnumType.STRING)
+    private AccountType accountType;
+
+    @Enumerated(EnumType.STRING)
     private AccountStatus accountStatus;
 
     private String currency;
-
 
 }
