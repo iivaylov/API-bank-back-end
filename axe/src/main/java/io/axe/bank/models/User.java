@@ -1,8 +1,10 @@
 package io.axe.bank.models;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -25,7 +27,12 @@ public class User {
 
     private String email;
 
+    private String password;
+
     private String phoneNumber;
+
+    @OneToOne
+    private Address address;
 
     private boolean isDeleted;
 

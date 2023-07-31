@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AccountTransactionController {
 
     @GetMapping("/{accountId}/transactions")
-    public ResponseEntity<String> getAccountTransactions(@PathVariable Integer accountId){
+    public ResponseEntity<String> getAccountTransactions(@PathVariable Integer accountId) {
         throw new UnsupportedOperationException();
     }
 }

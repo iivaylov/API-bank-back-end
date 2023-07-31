@@ -9,9 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TransferRequest {
+public class WithdrawRequest {
 
-    private String accountToIban;
-
-    private Number amountToTransfer;
+    private Number amountToWithdraw;
 }
