@@ -10,23 +10,18 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import static io.axe.bank.controllers.AuthenticationController.LOGGED_USER;
+
 @Component
 public class AuthenticationHelper {
-    public static final String LOGGED_USER = "loggedUser";
-
-    public static final String INVALID_AUTHENTICATION_PASSWORD = "Wrong password.";
     public static final String INVALID_AUTHENTICATION_EMAIL = "Email not found.";
     public static final String CONFIRM_PASS_ERROR_MSG = "The password confirmation should match the password.";
-    private static final String AUTHORIZATION_HEADER_NAME = "X-Authorization";
     private static final String INVALID_AUTHENTICATION_ERROR = "Invalid authentication.";
     private final UserService userService;
 
-    private final PasswordEncryptionDecryption passwordEncryptionDecryption;
-
     @Autowired
-    public AuthenticationHelper(UserService userService, PasswordEncryptionDecryption passwordEncryptionDecryption) {
+    public AuthenticationHelper(UserService userService) {
         this.userService = userService;
-        this.passwordEncryptionDecryption = passwordEncryptionDecryption;
     }
 
     public UserDTO tryGetCurrentUser(HttpSession session) {
@@ -38,13 +33,18 @@ public class AuthenticationHelper {
     }
 
     public UserDTO verifyAuthentication(LoginRequest loginRequest) {
-        throw new UnsupportedOperationException();
+        String email = loginRequest.getEmail();
+        if (!userService.isEmailExists(email)) {
+            throw new BankAuthError(INVALID_AUTHENTICATION_EMAIL);
+        }
+        String password = loginRequest.getPassword();
+        return userService.verifyLoginRequest(email, password);
     }
 
     public UserDTO registerNewUser(RegisterRequest registerRequest) {
         if (!registerRequest.getPassword().equals(registerRequest.getConfirmPassword())) {
             throw new BankPassError(CONFIRM_PASS_ERROR_MSG);
         }
-        throw new UnsupportedOperationException();
+        return userService.processRegistration(registerRequest);
     }
 }
