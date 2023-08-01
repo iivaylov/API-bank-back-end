@@ -52,6 +52,11 @@ public class User {
     private LocalDateTime closedAt;
 
     @OneToMany
+    @JoinTable(
+            name = "users_accounts",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "accounts_id")
+    )
     private Set<Account> accounts;
 
 }

@@ -3,6 +3,7 @@ package io.axe.bank.services.impls;
 import io.axe.bank.controllers.requests.RegisterRequest;
 import io.axe.bank.exceptions.BankAuthError;
 import io.axe.bank.exceptions.BankDuplicateEntity;
+import io.axe.bank.exceptions.BankEntityNotFound;
 import io.axe.bank.models.User;
 import io.axe.bank.repositories.UserDAO;
 import io.axe.bank.services.UserService;
@@ -19,7 +20,6 @@ public class UserServiceImpl implements UserService {
 
     public static final String EMAIL_EXISTS_MSG = "Email already exists.";
     private final UserDAO userDAO;
-
     private final UserDTOMapper userDTOMapper;
     private final PasswordEncryptionDecryption passwordEncryptionDecryption;
 
@@ -33,7 +33,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO getUserByEmail(String email) {
-        return null;
+        return userDAO
+                .selectUserByEmail(email)
+                .map(userDTOMapper)
+                .orElseThrow(() -> new BankEntityNotFound("User not found."));
     }
 
     @Override
