@@ -10,5 +10,5 @@ public interface UserDAO {
 
     void insertUser(User user);
 
-    boolean existsUserWithEmail(String email);
+    boolean emailExists(String email);
 }

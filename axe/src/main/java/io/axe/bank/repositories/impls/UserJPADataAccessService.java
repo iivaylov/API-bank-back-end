@@ -21,16 +21,21 @@ public class UserJPADataAccessService implements UserDAO {
 
     @Override
     public Optional<User> selectUserByEmail(String email) {
-        return Optional.empty();
+        return userRepository.findAll()
+                .stream()
+                .filter(user -> user.getEmail().equals(email))
+                .findFirst();
     }
 
     @Override
     public void insertUser(User user) {
-
+        userRepository.save(user);
     }
 
     @Override
-    public boolean existsUserWithEmail(String email) {
-        return false;
+    public boolean emailExists(String email) {
+        return userRepository.findAll()
+                .stream()
+                .anyMatch(user -> user.getEmail().equals(email));
     }
 }

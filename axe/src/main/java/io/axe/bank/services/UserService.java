@@ -12,7 +12,7 @@ public interface UserService {
 
     UserDTO verifyLoginRequest(String email, String password);
 
-    UserDTO processRegistration(RegisterRequest registerRequest);
+    void processRegistration(RegisterRequest registerRequest);
 
     UserDTO addUser(User user);
 

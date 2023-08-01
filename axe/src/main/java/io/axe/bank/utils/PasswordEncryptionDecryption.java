@@ -18,7 +18,7 @@ public class PasswordEncryptionDecryption {
     public static final String ENCRYPTING_ERROR = "Error while encrypting!";
     public static final String DECRYPTING_ERROR = "Error while decrypting!";
     public static final int LENGTH = 16;
-    private static final String ALGORITHM = "AES/GCM/NoPadding";
+    private static final String ALGORITHM = "AES";
     private static final String SECRET_KEY = "404E635266556A586E3272357538782F413F4428472B4B";
     private static SecretKeySpec secretKeySpec;
 

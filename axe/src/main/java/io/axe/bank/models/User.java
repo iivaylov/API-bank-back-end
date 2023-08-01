@@ -36,8 +36,11 @@ public class User {
     @Column(name = "phone_number")
     private String phoneNumber;
 
-    @OneToOne
-    private Address address;
+    @Column(name = "town_name")
+    private String townName;
+
+    @Column(name = "country")
+    private String country;
 
     @Column(name = "is_deleted")
     private boolean isDeleted;

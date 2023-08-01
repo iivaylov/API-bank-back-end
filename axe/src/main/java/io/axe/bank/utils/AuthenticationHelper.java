@@ -41,10 +41,10 @@ public class AuthenticationHelper {
         return userService.verifyLoginRequest(email, password);
     }
 
-    public UserDTO registerNewUser(RegisterRequest registerRequest) {
+    public void registerNewUser(RegisterRequest registerRequest) {
         if (!registerRequest.getPassword().equals(registerRequest.getConfirmPassword())) {
             throw new BankPassError(CONFIRM_PASS_ERROR_MSG);
         }
-        return userService.processRegistration(registerRequest);
+        userService.processRegistration(registerRequest);
     }
 }
