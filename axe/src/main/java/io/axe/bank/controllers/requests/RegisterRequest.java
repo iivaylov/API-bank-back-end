@@ -19,6 +19,8 @@ public class RegisterRequest {
 
     private String password;
 
+    private String confirmPassword;
+
     private String streetName;
 
     private String townName;
@@ -35,6 +37,7 @@ public class RegisterRequest {
 	"lastname": "Perez",
 	"email": "ultrices.mauris.ipsum@icloud.edu",
 	"password": "ol129GO1as",
+	"confirmPassword": "ol129GO1as",
 	"phoneNumber": "1-823-332-9607",
 	"streetName": "Ap Risque Rd.",
 	"townName": "Newport",
