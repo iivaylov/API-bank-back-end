@@ -22,19 +22,6 @@ public class PasswordEncryptionDecryption {
     private static final String SECRET_KEY = "404E635266556A586E3272357538782F413F4428472B4B";
     private static SecretKeySpec secretKeySpec;
 
-    private static void prepareSecreteKey() {
-        MessageDigest sha;
-        try {
-            byte[] key = PasswordEncryptionDecryption.SECRET_KEY.getBytes(StandardCharsets.UTF_8);
-            sha = MessageDigest.getInstance("SHA-256");
-            key = sha.digest(key);
-            key = Arrays.copyOf(key, LENGTH);
-            secretKeySpec = new SecretKeySpec(key, ALGORITHM);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-    }
-
     public String encryptPassword(String passwordToEncrypt) {
         try {
             prepareSecreteKey();
@@ -55,6 +42,19 @@ public class PasswordEncryptionDecryption {
             return new String(cipher.doFinal(Base64.getDecoder().decode(passwordToDecrypt)));
         } catch (Exception e) {
             throw new BankPassError(DECRYPTING_ERROR);
+        }
+    }
+
+    private static void prepareSecreteKey() {
+        MessageDigest sha;
+        try {
+            byte[] key = PasswordEncryptionDecryption.SECRET_KEY.getBytes(StandardCharsets.UTF_8);
+            sha = MessageDigest.getInstance("SHA-256");
+            key = sha.digest(key);
+            key = Arrays.copyOf(key, LENGTH);
+            secretKeySpec = new SecretKeySpec(key, ALGORITHM);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
         }
     }
 }

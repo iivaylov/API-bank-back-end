@@ -1,6 +1,8 @@
 package io.axe.bank.services.impls;
 
 import io.axe.bank.controllers.requests.RegisterRequest;
+import io.axe.bank.exceptions.BankAuthError;
+import io.axe.bank.exceptions.BankDuplicateEntity;
 import io.axe.bank.models.User;
 import io.axe.bank.repositories.UserDAO;
 import io.axe.bank.services.UserService;
@@ -14,6 +16,7 @@ import java.time.LocalDateTime;
 @Service
 public class UserServiceImpl implements UserService {
 
+    public static final String EMAIL_EXISTS_MSG = "Email already exists.";
     private final UserDAO userDAO;
     private final PasswordEncryptionDecryption passwordEncryptionDecryption;
 
@@ -35,11 +38,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO verifyLoginRequest(String email, String password) {
-        throw new UnsupportedOperationException();
+       User user = userDAO.selectUserByEmail(email).orElseThrow();
+       String originalPassword = passwordEncryptionDecryption.decryptPassword(user.getPassword());
+
+        if(!originalPassword.equals(password)){
+            throw new BankAuthError("Wrong Password.");
+        }
+
+        return null;
     }
 
     @Override
     public void processRegistration(RegisterRequest registerRequest) {
+        if(userDAO.emailExists(registerRequest.getEmail())){
+            throw new BankDuplicateEntity(EMAIL_EXISTS_MSG);
+        }
+
         User user = User.builder()
                 .firstName(registerRequest.getFirstname())
                 .lastName(registerRequest.getLastname())

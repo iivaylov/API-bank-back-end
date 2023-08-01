@@ -3,6 +3,7 @@ package io.axe.bank.utils;
 import io.axe.bank.controllers.requests.LoginRequest;
 import io.axe.bank.controllers.requests.RegisterRequest;
 import io.axe.bank.exceptions.BankAuthError;
+import io.axe.bank.exceptions.BankEntityNotFound;
 import io.axe.bank.exceptions.BankPassError;
 import io.axe.bank.services.UserService;
 import io.axe.bank.services.dtos.UserDTO;
@@ -35,7 +36,7 @@ public class AuthenticationHelper {
     public UserDTO verifyAuthentication(LoginRequest loginRequest) {
         String email = loginRequest.getEmail();
         if (!userService.isEmailExists(email)) {
-            throw new BankAuthError(INVALID_AUTHENTICATION_EMAIL);
+            throw new BankEntityNotFound(INVALID_AUTHENTICATION_EMAIL);
         }
         String password = loginRequest.getPassword();
         return userService.verifyLoginRequest(email, password);
