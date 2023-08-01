@@ -7,6 +7,7 @@ import io.axe.bank.models.User;
 import io.axe.bank.repositories.UserDAO;
 import io.axe.bank.services.UserService;
 import io.axe.bank.services.dtos.UserDTO;
+import io.axe.bank.services.mappers.UserDTOMapper;
 import io.axe.bank.utils.PasswordEncryptionDecryption;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,11 +19,15 @@ public class UserServiceImpl implements UserService {
 
     public static final String EMAIL_EXISTS_MSG = "Email already exists.";
     private final UserDAO userDAO;
+
+    private final UserDTOMapper userDTOMapper;
     private final PasswordEncryptionDecryption passwordEncryptionDecryption;
 
     @Autowired
-    public UserServiceImpl(UserDAO userDAO, PasswordEncryptionDecryption passwordEncryptionDecryption) {
+    public UserServiceImpl(UserDAO userDAO, UserDTOMapper userDTOMapper,
+                           PasswordEncryptionDecryption passwordEncryptionDecryption) {
         this.userDAO = userDAO;
+        this.userDTOMapper = userDTOMapper;
         this.passwordEncryptionDecryption = passwordEncryptionDecryption;
     }
 
@@ -44,8 +49,7 @@ public class UserServiceImpl implements UserService {
         if(!originalPassword.equals(password)){
             throw new BankAuthError("Wrong Password.");
         }
-
-        return null;
+        return userDTOMapper.apply(user);
     }
 
     @Override
