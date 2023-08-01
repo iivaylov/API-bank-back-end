@@ -18,8 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthenticationController {
 
     public static final String LOGGED_USER = "loggedUser";
-    public static final String LOGGED_IN_ERROR_MESSAGE = "You are already logged in.";
-    public static final String NOT_LOGGED_IN_ERROR_MESSAGE = "You are not logged in.";
     public static final String LOGGED_IN_MESSAGE = "Logged in successfully.";
     public static final String LOGOUT_MESSAGE = "Logout successfully.";
     public static final String REGISTERED_MESSAGE = "Registered successfully.";
@@ -33,6 +31,7 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest, HttpSession session) {
+        authenticationHelper.tryAlreadyLoggedInUser(session);
         final UserDTO currentUser = authenticationHelper.verifyAuthentication(loginRequest);
         session.setAttribute(LOGGED_USER, currentUser.email());
         return new ResponseEntity<>(LOGGED_IN_MESSAGE, HttpStatus.OK);
@@ -46,7 +45,7 @@ public class AuthenticationController {
 
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpSession session) {
-        session.removeAttribute(LOGGED_USER);
+        session.invalidate();
         return new ResponseEntity<>(LOGOUT_MESSAGE, HttpStatus.OK);
     }
 }

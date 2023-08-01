@@ -20,17 +20,22 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @OneToOne
+    @ManyToOne
     private User owner;
 
     @Column(name = "iban")
     private String iban;
 
+    @Column(name = "account_type")
     @Enumerated(EnumType.STRING)
     private AccountType accountType;
 
+    @Column(name = "account_status")
     @Enumerated(EnumType.STRING)
     private AccountStatus accountStatus;
+
+    @Column(name = "balance")
+    private Number balance;
 
     @Column(name = "currency")
     private String currency;
