@@ -23,6 +23,7 @@ public class Account {
     @OneToOne
     private User owner;
 
+    @Column(name = "iban")
     private String iban;
 
     @Enumerated(EnumType.STRING)
@@ -31,6 +32,6 @@ public class Account {
     @Enumerated(EnumType.STRING)
     private AccountStatus accountStatus;
 
+    @Column(name = "currency")
     private String currency;
-
 }

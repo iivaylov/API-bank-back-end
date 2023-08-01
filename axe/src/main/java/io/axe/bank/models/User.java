@@ -21,23 +21,31 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    private String firstname;
+    @Column(name = "first_name")
+    private String firstName;
 
-    private String lastname;
+    @Column(name = "last_name")
+    private String lastName;
 
+    @Column(name = "email")
     private String email;
 
+    @Column(name = "password")
     private String password;
 
+    @Column(name = "phone_number")
     private String phoneNumber;
 
     @OneToOne
     private Address address;
 
+    @Column(name = "is_deleted")
     private boolean isDeleted;
 
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @Column(name = "closed_at")
     private LocalDateTime closedAt;
 
     @OneToMany

@@ -15,3 +15,11 @@ public class LoginRequest {
 
     private String password;
 }
+/*
+
+{
+    "email": "ultrices.mauris.ipsum@icloud.edu",
+    "password": "ol129GO1as"
+}
+
+*/
