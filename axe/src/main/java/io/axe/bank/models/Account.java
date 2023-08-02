@@ -37,7 +37,7 @@ public class Account {
     private AccountStatus accountStatus;
 
     @Column(name = "balance")
-    private Number balance;
+    private double balance;
 
     @Column(name = "currency")
     private String currency;

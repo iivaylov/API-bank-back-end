@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class WithdrawRequest {
 
-    private Number amountToWithdraw;
+    private double amountToWithdraw;
 }

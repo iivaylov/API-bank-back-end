@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class DepositRequest {
 
-    private Number amountToDeposit;
+    private double amountToDeposit;
 }

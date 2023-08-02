@@ -13,7 +13,7 @@ public record AccountDTO(
 
         AccountStatus accountStatus,
 
-        Number balance,
+        double balance,
 
         String currency
 

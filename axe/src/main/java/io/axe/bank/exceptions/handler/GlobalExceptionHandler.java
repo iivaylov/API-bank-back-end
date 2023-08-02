@@ -1,9 +1,6 @@
 package io.axe.bank.exceptions.handler;
 
-import io.axe.bank.exceptions.BankAuthError;
-import io.axe.bank.exceptions.BankDuplicateEntity;
-import io.axe.bank.exceptions.BankEntityNotFound;
-import io.axe.bank.exceptions.BankPassError;
+import io.axe.bank.exceptions.*;
 import io.axe.bank.exceptions.model.BankErrorMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,6 +52,17 @@ public class GlobalExceptionHandler {
         );
 
         return new ResponseEntity<>(errorMessage, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(value = {BankTransactionError.class})
+    public ResponseEntity<Object> handleBankTransactionException
+            (BankTransactionError bankTransactionError) {
+        BankErrorMessage errorMessage = new BankErrorMessage(
+                bankTransactionError.getMessage(),
+                HttpStatus.NOT_ACCEPTABLE
+        );
+
+        return new ResponseEntity<>(errorMessage, HttpStatus.NOT_ACCEPTABLE);
     }
 }
 
