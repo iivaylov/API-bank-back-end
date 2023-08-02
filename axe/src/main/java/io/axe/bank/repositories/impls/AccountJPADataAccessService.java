@@ -6,6 +6,8 @@ import io.axe.bank.repositories.jpa.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public class AccountJPADataAccessService implements AccountDAO {
     private final AccountRepository accountRepository;
@@ -13,6 +15,11 @@ public class AccountJPADataAccessService implements AccountDAO {
     @Autowired
     public AccountJPADataAccessService(AccountRepository accountRepository) {
         this.accountRepository = accountRepository;
+    }
+
+    @Override
+    public Optional<Account> getAccountById(Integer accountId) {
+        return accountRepository.findById(accountId);
     }
 
     @Override

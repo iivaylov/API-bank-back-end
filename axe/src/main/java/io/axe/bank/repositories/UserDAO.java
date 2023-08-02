@@ -10,5 +10,7 @@ public interface UserDAO {
 
     void insertUser(User user);
 
+    void updateUser(User user);
+
     boolean emailExists(String email);
 }

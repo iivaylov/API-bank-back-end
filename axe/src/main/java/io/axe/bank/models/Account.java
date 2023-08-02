@@ -20,9 +20,6 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @ManyToOne
-    private User owner;
-
     @Column(name = "iban")
     private String iban;
 

@@ -2,6 +2,7 @@ package io.axe.bank.services.impls;
 
 import io.axe.bank.controllers.requests.OpenAccountRequest;
 import io.axe.bank.exceptions.BankDuplicateEntity;
+import io.axe.bank.exceptions.BankEntityNotFound;
 import io.axe.bank.models.Account;
 import io.axe.bank.models.User;
 import io.axe.bank.models.enums.AccountStatus;
@@ -21,6 +22,9 @@ import java.util.Random;
 @Service
 public class AccountServiceImpl implements AccountService {
     private static final String GENERATOR = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    public static final String OPEN_ACCOUNT_ERROR_MSG = "You cannot open a second account of this type.";
+    public static final String USD = "USD";
+    public static final double INITIAL_BALANCE = 0.00;
 
     private final UserDAO userDAO;
     private final AccountDAO accountDAO;
@@ -40,33 +44,29 @@ public class AccountServiceImpl implements AccountService {
         AccountType accountType = openAccountRequest.getAccountType();
 
         if(userAccountExists(user, accountType)){
-            throw new BankDuplicateEntity("You cannot open a second account of this type.");
+            throw new BankDuplicateEntity(OPEN_ACCOUNT_ERROR_MSG);
         }
 
         Account account = Account
                 .builder()
-                .owner(user)
                 .iban(generateIban())
                 .accountType(accountType)
                 .accountStatus(AccountStatus.ENABLED)
-                .balance(0.00)
-                .currency("USD")
+                .balance(INITIAL_BALANCE)
+                .currency(USD)
                 .build();
 
         accountDAO.insertAccount(account);
-        user.getAccounts().add(account);
-
-        // TODO: update user accounts = 0
-        //System.out.println(user.getAccounts().size());
+        addAccountToUserAccounts(account, user);
         return accountDTOMapper.apply(account);
     }
 
-    private boolean userAccountExists(User user, AccountType accountType) {
-        return user.getAccounts()
-                .stream()
-                .anyMatch(account -> account
-                        .getAccountType()
-                        .toString().equals(accountType.toString()));
+    private void addAccountToUserAccounts(Account account, User user) {
+       Account newAccount = accountDAO.getAccountById(account.getId())
+               .orElseThrow(() -> new BankEntityNotFound("Account not found"));
+
+        user.getAccounts().add(newAccount);
+        userDAO.updateUser(user);
     }
 
     @Override
@@ -79,10 +79,16 @@ public class AccountServiceImpl implements AccountService {
 
     }
 
+    private boolean userAccountExists(User user, AccountType accountType) {
+        return user.getAccounts()
+                .stream()
+                .anyMatch(account -> account.getAccountType().equals(accountType));
+    }
+
     private String generateIban(){
-        final StringBuilder sb = new StringBuilder("AXE");
+        final StringBuilder sb = new StringBuilder("AXE#");
         final Random random = new SecureRandom();
-        for (int i = 0; i < 17; i++) {
+        for (int i = 0; i < 16; i++) {
             int index = random.nextInt(GENERATOR.length());
             char randomChar = GENERATOR.charAt(index);
             sb.append(randomChar);

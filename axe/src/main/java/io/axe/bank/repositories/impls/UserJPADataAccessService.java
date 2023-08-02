@@ -33,6 +33,11 @@ public class UserJPADataAccessService implements UserDAO {
     }
 
     @Override
+    public void updateUser(User user) {
+        userRepository.save(user);
+    }
+
+    @Override
     public boolean emailExists(String email) {
         return userRepository.findAll()
                 .stream()
