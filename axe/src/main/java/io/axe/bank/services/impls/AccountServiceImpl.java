@@ -39,6 +39,19 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public AccountDTO getAccount(Integer accountId, UserDTO currentUser) {
+        User user = getUserFromRepository(currentUser);
+
+        if(user.getAccounts().stream().noneMatch(account -> account.getId().intValue() == accountId)){
+            throw new BankEntityNotFound("You don't have such account.");
+        }
+
+       Account account = accountDAO.getAccountById(accountId).orElseThrow();
+
+        return accountDTOMapper.apply(account);
+    }
+
+    @Override
     public AccountDTO openAccount(OpenAccountRequest openAccountRequest, UserDTO currentUser) {
         User user = getUserFromRepository(currentUser);
         AccountType accountType = openAccountRequest.getAccountType();
@@ -60,11 +73,6 @@ public class AccountServiceImpl implements AccountService {
         accountDAO.insertAccount(account);
         addAccountToUserAccounts(account, user);
         return accountDTOMapper.apply(account);
-    }
-
-    @Override
-    public AccountDTO getAccount(Integer accountId, UserDTO currentUser) {
-        return null;
     }
 
     @Override

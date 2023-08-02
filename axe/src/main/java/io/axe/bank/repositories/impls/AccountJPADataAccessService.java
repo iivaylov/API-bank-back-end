@@ -28,6 +28,11 @@ public class AccountJPADataAccessService implements AccountDAO {
     }
 
     @Override
+    public void updateAccount(Account account) {
+        accountRepository.save(account);
+    }
+
+    @Override
     public void deleteAccount(Account account) {
         accountRepository.delete(account);
     }

@@ -10,5 +10,7 @@ public interface AccountDAO {
 
     void insertAccount(Account account);
 
+    void updateAccount(Account account);
+
     void deleteAccount(Account account);
 }
