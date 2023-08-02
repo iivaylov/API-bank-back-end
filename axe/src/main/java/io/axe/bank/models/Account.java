@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 @Data
 @Builder
@@ -14,10 +16,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "accounts")
+@SQLDelete(sql = "UPDATE accounts SET is_closed = true WHERE account_id = ?")
+@Where(clause = "is_closed = false")
 public class Account {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "account_id")
     private Integer id;
 
     @Column(name = "iban")
@@ -36,4 +41,7 @@ public class Account {
 
     @Column(name = "currency")
     private String currency;
+
+    @Column(name = "is_closed")
+    private boolean isClosed;
 }

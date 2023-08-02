@@ -9,4 +9,6 @@ public interface AccountDAO {
     Optional<Account> getAccountById(Integer accountId);
 
     void insertAccount(Account account);
+
+    void deleteAccount(Account account);
 }

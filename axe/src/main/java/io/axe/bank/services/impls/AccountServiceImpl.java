@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.util.Objects;
 import java.util.Random;
 
 @Service
@@ -39,11 +40,10 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountDTO openAccount(OpenAccountRequest openAccountRequest, UserDTO currentUser) {
-        String email = currentUser.email();
-        User user = userDAO.selectUserByEmail(email).orElseThrow();
+        User user = getUserFromRepository(currentUser);
         AccountType accountType = openAccountRequest.getAccountType();
 
-        if(userAccountExists(user, accountType)){
+        if(userAccountTypeExists(user, accountType)){
             throw new BankDuplicateEntity(OPEN_ACCOUNT_ERROR_MSG);
         }
 
@@ -54,6 +54,7 @@ public class AccountServiceImpl implements AccountService {
                 .accountStatus(AccountStatus.ENABLED)
                 .balance(INITIAL_BALANCE)
                 .currency(USD)
+                .isClosed(false)
                 .build();
 
         accountDAO.insertAccount(account);
@@ -61,25 +62,45 @@ public class AccountServiceImpl implements AccountService {
         return accountDTOMapper.apply(account);
     }
 
+    @Override
+    public AccountDTO getAccount(Integer accountId, UserDTO currentUser) {
+        return null;
+    }
+
+    @Override
+    public void deleteAccount(Integer accountId, UserDTO currentUser) {
+        User user = getUserFromRepository(currentUser);
+
+        Account account = accountDAO.getAccountById(accountId)
+                .orElseThrow(() -> new BankEntityNotFound("Account not found."));
+
+        if(user.getAccounts().stream().noneMatch(acc -> Objects.equals(acc.getId(), accountId))){
+            throw new BankEntityNotFound("You can close only your accounts!");
+        }
+        removeAccountFromUserAccounts(account, user);
+        accountDAO.deleteAccount(account);
+    }
+
+    private User getUserFromRepository(UserDTO currentUser) {
+        String email = currentUser.email();
+        return userDAO.selectUserByEmail(email)
+                .orElseThrow(() -> new BankEntityNotFound("User not found."));
+    }
+
     private void addAccountToUserAccounts(Account account, User user) {
-       Account newAccount = accountDAO.getAccountById(account.getId())
-               .orElseThrow(() -> new BankEntityNotFound("Account not found"));
+        Account newAccount = accountDAO.getAccountById(account.getId())
+                .orElseThrow(() -> new BankEntityNotFound("Account not found."));
 
         user.getAccounts().add(newAccount);
         userDAO.updateUser(user);
     }
 
-    @Override
-    public AccountDTO getAccount(Integer accountId, UserDTO user) {
-        return null;
+    private void removeAccountFromUserAccounts(Account account, User user) {
+        user.getAccounts().remove(account);
+        userDAO.updateUser(user);
     }
 
-    @Override
-    public void deleteAccount(Integer accountId, UserDTO user) {
-
-    }
-
-    private boolean userAccountExists(User user, AccountType accountType) {
+    private boolean userAccountTypeExists(User user, AccountType accountType) {
         return user.getAccounts()
                 .stream()
                 .anyMatch(account -> account.getAccountType().equals(accountType));
@@ -95,6 +116,4 @@ public class AccountServiceImpl implements AccountService {
         }
         return sb.toString().toUpperCase().trim();
     }
-
-
 }
