@@ -23,6 +23,15 @@ public class AccountJPADataAccessService implements AccountDAO {
     }
 
     @Override
+    public Optional<Account> getAccountByIban(String iban) {
+        return accountRepository
+                .findAll()
+                .stream()
+                .filter(account -> account.getIban().equals(iban))
+                .findFirst();
+    }
+
+    @Override
     public void insertAccount(Account account) {
         accountRepository.save(account);
     }

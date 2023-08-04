@@ -8,6 +8,8 @@ public interface AccountDAO {
 
     Optional<Account> getAccountById(Integer accountId);
 
+    Optional<Account> getAccountByIban(String iban);
+
     void insertAccount(Account account);
 
     void updateAccount(Account account);

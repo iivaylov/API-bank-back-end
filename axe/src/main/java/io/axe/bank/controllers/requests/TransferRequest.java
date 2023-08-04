@@ -13,5 +13,5 @@ public class TransferRequest {
 
     private String accountToIban;
 
-    private Number amountToTransfer;
+    private double amountToTransfer;
 }
