@@ -39,7 +39,6 @@ class UserServiceTests {
 
         Mockito.when(mockRepositoryDAO.selectUserByEmail(email)).thenReturn(Optional.empty());
 
-        // Act and Assert
         Assertions.assertThrows(BankEntityNotFound.class, () -> service.getUserByEmail(email));
     }
 
@@ -52,7 +51,7 @@ class UserServiceTests {
                 "user@example.com",
                 "111111");
         Integer userId = 1;
-        User userFromRepository = new User(/* Initialize user data */);
+        User userFromRepository = new User();
         userFromRepository.setId(userId);
         userFromRepository.setEmail("user@example.com");
 
@@ -63,18 +62,20 @@ class UserServiceTests {
         Assertions.assertDoesNotThrow(() -> service.checkCurrentUser(currentUser, userId));
 
         // Verify that userDAO.selectUserById was called with the correct userId
-        Mockito.verify(mockRepositoryDAO, Mockito.times(1)).selectUserById(userId);
+        Mockito.verify(mockRepositoryDAO, Mockito.times(1))
+                .selectUserById(userId);
     }
 
     @Test
     void testCloseUserProfile() {
-        // Prepare test data
         UserDTO currentUser = new UserDTO(
                 "User1",
                 "User2",
                 "user@example.com",
                 "111111");
+
         Integer userId = 1;
+
         User userFromRepository = new User();
         userFromRepository.setId(userId);
         userFromRepository.setEmail("user@example.com");
@@ -84,7 +85,8 @@ class UserServiceTests {
 
         Assertions.assertDoesNotThrow(() -> service.closeUserProfile(currentUser, userId));
 
-        Mockito.verify(mockRepositoryDAO, Mockito.times(1)).deleteUser(userFromRepository);
+        Mockito.verify(mockRepositoryDAO, Mockito.times(1))
+                .deleteUser(userFromRepository);
     }
 
 
