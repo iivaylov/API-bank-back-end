@@ -18,8 +18,8 @@ import static io.axe.bank.controllers.AuthenticationController.LOGGED_USER;
 public class AuthenticationHelper {
     public static final String INVALID_AUTHENTICATION_EMAIL = "Email not found.";
     public static final String CONFIRM_PASS_ERROR_MSG = "The password confirmation should match the password.";
-    private static final String INVALID_AUTHENTICATION_ERROR = "Invalid authentication.";
     public static final String ALREADY_LOGGED_IN = "You are already logged in.";
+    private static final String INVALID_AUTHENTICATION_ERROR = "Invalid authentication.";
     private final UserService userService;
 
     @Autowired
@@ -35,9 +35,9 @@ public class AuthenticationHelper {
         return userService.getUserByEmail(loggedUser);
     }
 
-    public void tryAlreadyLoggedInUser(HttpSession session){
+    public void tryAlreadyLoggedInUser(HttpSession session) {
         String loggedUser = (String) session.getAttribute(LOGGED_USER);
-        if(loggedUser != null){
+        if (loggedUser != null) {
             throw new BankDuplicateEntity(ALREADY_LOGGED_IN);
         }
     }

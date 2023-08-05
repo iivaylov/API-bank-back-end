@@ -22,11 +22,17 @@ import java.util.Random;
 
 @Service
 public class AccountServiceImpl implements AccountService {
-    private static final String GENERATOR = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     public static final String OPEN_ACCOUNT_ERROR_MSG = "You cannot open a second account of this type.";
     public static final String USD = "USD";
     public static final double INITIAL_BALANCE = 0.00;
-
+    public static final String USER_ACCOUNT_ERROR = "You don't have such account.";
+    public static final String ACCOUNT_ERROR = "Account not found.";
+    public static final int SYMBOLS = 16;
+    public static final String CLOSING_ACCOUNT_ERROR = "You can close only your accounts!";
+    public static final String USER_ERROR = "User not found.";
+    public static final String IBAN_AXE_PART = "AXE#";
+    public static final int ZERO = 0;
+    private static final String GENERATOR = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private final UserDAO userDAO;
     private final AccountDAO accountDAO;
     private final AccountDTOMapper accountDTOMapper;
@@ -41,27 +47,54 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public AccountDTO getAccount(Integer accountId, UserDTO currentUser) {
         User user = getUserFromRepository(currentUser);
-
-        if(user.getAccounts().stream().noneMatch(account -> account.getId().intValue() == accountId)){
-            throw new BankEntityNotFound("You don't have such account.");
-        }
-
-       Account account = accountDAO.getAccountById(accountId).orElseThrow();
-
+        validateUserAccountExists(user, accountId);
+        Account account = getAccountById(accountId);
         return accountDTOMapper.apply(account);
     }
 
     @Override
     public AccountDTO openAccount(OpenAccountRequest openAccountRequest, UserDTO currentUser) {
         User user = getUserFromRepository(currentUser);
-        AccountType accountType = openAccountRequest.getAccountType();
+        validateUserAccountTypeNotExists(user, openAccountRequest.getAccountType());
+        Account account = createAccount(openAccountRequest.getAccountType());
+        addAccountToUserAccounts(account, user);
+        return accountDTOMapper.apply(account);
+    }
 
-        if(userAccountTypeExists(user, accountType)){
+    @Override
+    public void deleteAccount(Integer accountId, UserDTO currentUser) {
+        User user = getUserFromRepository(currentUser);
+        Account account = getAccountById(accountId);
+        validateUserOwnsAccount(user, account);
+        removeAccountFromUserAccounts(account, user);
+        deleteAccountFromDAO(account);
+    }
+
+    private void validateUserAccountExists(User user, Integer accountId) {
+        if (user.getAccounts().stream().noneMatch(account -> Objects.equals(account.getId(), accountId))) {
+            throw new BankEntityNotFound(USER_ACCOUNT_ERROR);
+        }
+    }
+
+    private void validateUserAccountTypeNotExists(User user, AccountType accountType) {
+        if (user.getAccounts().stream().anyMatch(account -> account.getAccountType().equals(accountType))) {
             throw new BankDuplicateEntity(OPEN_ACCOUNT_ERROR_MSG);
         }
+    }
 
-        Account account = Account
-                .builder()
+    private Account getAccountById(Integer accountId) {
+        return accountDAO.getAccountById(accountId)
+                .orElseThrow(() -> new BankEntityNotFound(ACCOUNT_ERROR));
+    }
+
+    private void validateUserOwnsAccount(User user, Account account) {
+        if (user.getAccounts().stream().noneMatch(acc -> Objects.equals(acc.getId(), account.getId()))) {
+            throw new BankEntityNotFound(CLOSING_ACCOUNT_ERROR);
+        }
+    }
+
+    private Account createAccount(AccountType accountType) {
+        Account account = Account.builder()
                 .iban(generateIban())
                 .accountType(accountType)
                 .accountStatus(AccountStatus.ENABLED)
@@ -71,33 +104,22 @@ public class AccountServiceImpl implements AccountService {
                 .build();
 
         accountDAO.insertAccount(account);
-        addAccountToUserAccounts(account, user);
-        return accountDTOMapper.apply(account);
+        return account;
     }
 
-    @Override
-    public void deleteAccount(Integer accountId, UserDTO currentUser) {
-        User user = getUserFromRepository(currentUser);
-
-        Account account = accountDAO.getAccountById(accountId)
-                .orElseThrow(() -> new BankEntityNotFound("Account not found."));
-
-        if(user.getAccounts().stream().noneMatch(acc -> Objects.equals(acc.getId(), accountId))){
-            throw new BankEntityNotFound("You can close only your accounts!");
-        }
-        removeAccountFromUserAccounts(account, user);
+    private void deleteAccountFromDAO(Account account) {
         accountDAO.deleteAccount(account);
     }
 
     private User getUserFromRepository(UserDTO currentUser) {
         String email = currentUser.email();
         return userDAO.selectUserByEmail(email)
-                .orElseThrow(() -> new BankEntityNotFound("User not found."));
+                .orElseThrow(() -> new BankEntityNotFound(USER_ERROR));
     }
 
     private void addAccountToUserAccounts(Account account, User user) {
         Account newAccount = accountDAO.getAccountById(account.getId())
-                .orElseThrow(() -> new BankEntityNotFound("Account not found."));
+                .orElseThrow(() -> new BankEntityNotFound(ACCOUNT_ERROR));
 
         user.getAccounts().add(newAccount);
         userDAO.updateUser(user);
@@ -108,16 +130,10 @@ public class AccountServiceImpl implements AccountService {
         userDAO.updateUser(user);
     }
 
-    private boolean userAccountTypeExists(User user, AccountType accountType) {
-        return user.getAccounts()
-                .stream()
-                .anyMatch(account -> account.getAccountType().equals(accountType));
-    }
-
-    private String generateIban(){
-        final StringBuilder sb = new StringBuilder("AXE#");
+    private String generateIban() {
+        final StringBuilder sb = new StringBuilder(IBAN_AXE_PART);
         final Random random = new SecureRandom();
-        for (int i = 0; i < 16; i++) {
+        for (int i = ZERO; i < SYMBOLS; i++) {
             int index = random.nextInt(GENERATOR.length());
             char randomChar = GENERATOR.charAt(index);
             sb.append(randomChar);

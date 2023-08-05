@@ -27,28 +27,23 @@ public class AccountController {
 
     @PostMapping("/open-account")
     public ResponseEntity<AccountDTO> openAccount(@RequestBody OpenAccountRequest openAccountRequest,
-                                                  HttpSession session){
+                                                  HttpSession session) {
         UserDTO currentUser = authenticationHelper.tryGetCurrentUser(session);
         AccountDTO openedAccount = accountService.openAccount(openAccountRequest, currentUser);
         return new ResponseEntity<>(openedAccount, HttpStatus.CREATED);
     }
 
     @GetMapping("/{accountId}")
-    public ResponseEntity<AccountDTO> getAccount(@PathVariable Integer accountId, HttpSession session){
+    public ResponseEntity<AccountDTO> getAccount(@PathVariable Integer accountId, HttpSession session) {
         UserDTO currentUser = authenticationHelper.tryGetCurrentUser(session);
         AccountDTO account = accountService.getAccount(accountId, currentUser);
         return new ResponseEntity<>(account, HttpStatus.OK);
     }
 
     @DeleteMapping("/{accountId}")
-    public ResponseEntity<String> closeAccount(@PathVariable Integer accountId, HttpSession session){
+    public ResponseEntity<String> closeAccount(@PathVariable Integer accountId, HttpSession session) {
         UserDTO currentUser = authenticationHelper.tryGetCurrentUser(session);
         accountService.deleteAccount(accountId, currentUser);
         return new ResponseEntity<>(ACCOUNT_CLOSED, HttpStatus.ACCEPTED);
-    }
-
-    @GetMapping("/{accountId}/transactions")
-    public ResponseEntity<String> getAccountTransactions(HttpSession session, @PathVariable Integer accountId) {
-        throw new UnsupportedOperationException();
     }
 }

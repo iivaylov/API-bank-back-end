@@ -1,7 +1,6 @@
 package io.axe.bank.services;
 
 import io.axe.bank.controllers.requests.RegisterRequest;
-import io.axe.bank.models.User;
 import io.axe.bank.services.dtos.UserDTO;
 
 public interface UserService {
@@ -14,9 +13,7 @@ public interface UserService {
 
     void processRegistration(RegisterRequest registerRequest);
 
-    UserDTO addUser(User user);
+    void checkCurrentUser(UserDTO currentUser, Integer userId);
 
-    UserDTO updateUser(User user);
-
-    void deleteUser(String email);
+    void closeUserProfile(UserDTO currentUser, Integer userId);
 }

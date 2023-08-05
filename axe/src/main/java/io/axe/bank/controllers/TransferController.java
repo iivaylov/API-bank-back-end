@@ -7,7 +7,6 @@ import io.axe.bank.services.dtos.AccountDTO;
 import io.axe.bank.services.dtos.UserDTO;
 import io.axe.bank.utils.AuthenticationHelper;
 import jakarta.servlet.http.HttpSession;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +31,7 @@ public class TransferController {
 
     @PostMapping("/accounts/{fromAccountId}/transfer")
     public ResponseEntity<String> transferFunds(@RequestBody TransferRequest transferRequest,
-                                               @PathVariable Integer fromAccountId, HttpSession session) {
+                                                @PathVariable Integer fromAccountId, HttpSession session) {
         UserDTO currentUser = authenticationHelper.tryGetCurrentUser(session);
         AccountDTO fromAccount = accountService.getAccount(fromAccountId, currentUser);
         transferService.innerTransferFunds(transferRequest, fromAccount);

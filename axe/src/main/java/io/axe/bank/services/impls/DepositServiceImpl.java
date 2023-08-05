@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class DepositServiceImpl implements DepositService {
+    public static final String DEPOSIT_ERROR = "You must deposit more than 15.00$";
+    public static final String ACCOUNT_ERROR = "Account not found";
+    public static final double AMOUNT_TO_DEPOSIT = 15.00;
     private final AccountDAO accountDAO;
 
     @Autowired
@@ -31,12 +34,12 @@ public class DepositServiceImpl implements DepositService {
 
     private Account getAccountById(Integer accountId) {
         return accountDAO.getAccountById(accountId)
-                .orElseThrow(() -> new BankEntityNotFound("Account not found"));
+                .orElseThrow(() -> new BankEntityNotFound(ACCOUNT_ERROR));
     }
 
     private void checkMinimumDepositAmount(double amount) {
-        if (amount <= 15.00) {
-            throw new BankTransactionError("You must deposit more than 15.00$");
+        if (amount <= AMOUNT_TO_DEPOSIT) {
+            throw new BankTransactionError(DEPOSIT_ERROR);
         }
     }
 

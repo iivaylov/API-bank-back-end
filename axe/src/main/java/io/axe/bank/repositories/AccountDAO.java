@@ -10,9 +10,9 @@ public interface AccountDAO {
 
     Optional<Account> getAccountByIban(String iban);
 
-    void insertAccount(Account account);
-
     void updateAccount(Account account);
+
+    void insertAccount(Account account);
 
     void deleteAccount(Account account);
 }

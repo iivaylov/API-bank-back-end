@@ -19,6 +19,10 @@ import java.time.LocalDateTime;
 public class UserServiceImpl implements UserService {
 
     public static final String EMAIL_EXISTS_MSG = "Email already exists.";
+    public static final String USER_ERROR = "User not found.";
+    public static final String WRONG_PASSWORD = "Wrong Password.";
+    public static final String CLOSE_PROFILE_ERROR = "You can close only your profile.";
+    public static final String VIEW_PROFILE_ERROR = "You can view only your profile.";
     private final UserDAO userDAO;
     private final UserDTOMapper userDTOMapper;
     private final PasswordEncryptionDecryption passwordEncryptionDecryption;
@@ -36,7 +40,7 @@ public class UserServiceImpl implements UserService {
         return userDAO
                 .selectUserByEmail(email)
                 .map(userDTOMapper)
-                .orElseThrow(() -> new BankEntityNotFound("User not found."));
+                .orElseThrow(() -> new BankEntityNotFound(USER_ERROR));
     }
 
     @Override
@@ -46,11 +50,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO verifyLoginRequest(String email, String password) {
-       User user = userDAO.selectUserByEmail(email).orElseThrow();
-       String originalPassword = passwordEncryptionDecryption.decryptPassword(user.getPassword());
+        User user = userDAO.selectUserByEmail(email).orElseThrow();
+        String originalPassword = passwordEncryptionDecryption.decryptPassword(user.getPassword());
 
-        if(!originalPassword.equals(password)){
-            throw new BankAuthError("Wrong Password.");
+        if (!originalPassword.equals(password)) {
+            throw new BankAuthError(WRONG_PASSWORD);
         }
         return userDTOMapper.apply(user);
     }
@@ -62,10 +66,36 @@ public class UserServiceImpl implements UserService {
         userDAO.insertUser(user);
     }
 
+    @Override
+    public void checkCurrentUser(UserDTO currentUser, Integer userId) {
+        User userFromRepository = getUserById(userId);
+        validateEmail(currentUser, userFromRepository, VIEW_PROFILE_ERROR);
+    }
+
+    @Override
+    public void closeUserProfile(UserDTO currentUser, Integer userId) {
+        User userFromRepository = getUserById(userId);
+        validateEmail(currentUser, userFromRepository, CLOSE_PROFILE_ERROR);
+        userFromRepository.setClosedAt(LocalDateTime.now());
+        userDAO.deleteUser(userFromRepository);
+    }
+
+    private static void validateEmail(UserDTO currentUser, User userFromRepository, String message) {
+        String userEmail = userFromRepository.getEmail();
+        if (!userEmail.equals(currentUser.email())) {
+            throw new BankAuthError(message);
+        }
+    }
+
     private void validateEmailNotExists(String email) {
         if (userDAO.emailExists(email)) {
             throw new BankDuplicateEntity(EMAIL_EXISTS_MSG);
         }
+    }
+
+    private User getUserById(Integer userId) {
+        return userDAO.selectUserById(userId)
+                .orElseThrow(() -> new BankEntityNotFound(USER_ERROR));
     }
 
     private User createUserFromRequest(RegisterRequest registerRequest) {
@@ -82,20 +112,5 @@ public class UserServiceImpl implements UserService {
                 .isDeleted(false)
                 .createdAt(LocalDateTime.now())
                 .build();
-    }
-
-    @Override
-    public UserDTO addUser(User user) {
-        return null;
-    }
-
-    @Override
-    public UserDTO updateUser(User user) {
-        return null;
-    }
-
-    @Override
-    public void deleteUser(String email) {
-
     }
 }

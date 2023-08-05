@@ -32,12 +32,12 @@ public class AccountJPADataAccessService implements AccountDAO {
     }
 
     @Override
-    public void insertAccount(Account account) {
+    public void updateAccount(Account account) {
         accountRepository.save(account);
     }
 
     @Override
-    public void updateAccount(Account account) {
+    public void insertAccount(Account account) {
         accountRepository.save(account);
     }
 

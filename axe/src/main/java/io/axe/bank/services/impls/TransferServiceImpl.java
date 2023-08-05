@@ -10,10 +10,13 @@ import io.axe.bank.services.dtos.AccountDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @Service
 public class TransferServiceImpl implements TransferService {
 
     public static final String TRANSFER_ERROR_MSG = "The amount you want to send is greater than your balance!";
+    public static final String ACCOUNT_ERROR = "Account not found.";
     private final AccountDAO accountDAO;
 
     @Autowired
@@ -26,6 +29,11 @@ public class TransferServiceImpl implements TransferService {
         Account senderAccount = getSenderAccount(fromAccount);
         Account receiverAccount = getReceiverAccount(transferRequest);
 
+        if (Objects.equals(senderAccount.getId(), receiverAccount.getId())) {
+            throw new BankTransactionError("You cannot send money to same account.");
+        }
+
+
         double amountToSend = transferRequest.getAmountToTransfer();
         checkSufficientBalance(senderAccount, amountToSend);
 
@@ -35,13 +43,13 @@ public class TransferServiceImpl implements TransferService {
 
     private Account getSenderAccount(AccountDTO fromAccount) {
         return accountDAO.getAccountById(fromAccount.id())
-                .orElseThrow(() -> new BankEntityNotFound("Account not found."));
+                .orElseThrow(() -> new BankEntityNotFound(ACCOUNT_ERROR));
     }
 
     private Account getReceiverAccount(TransferRequest transferRequest) {
         String accountToIban = transferRequest.getAccountToIban();
         return accountDAO.getAccountByIban(accountToIban)
-                .orElseThrow(() -> new BankEntityNotFound("Account not found."));
+                .orElseThrow(() -> new BankEntityNotFound(ACCOUNT_ERROR));
     }
 
     private void checkSufficientBalance(Account senderAccount, double amountToSend) {

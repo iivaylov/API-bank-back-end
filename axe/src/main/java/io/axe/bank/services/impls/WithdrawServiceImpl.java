@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class WithdrawServiceImpl implements WithdrawService {
 
+    public static final double ZERO = 0.00;
+    public static final String WITHDRAW_ERROR_MSG = "Incorrect amount to withdraw.";
+    public static final String ACCOUNT_ERROR = "Account not found";
     private final AccountDAO accountDAO;
 
     @Autowired
@@ -34,12 +37,12 @@ public class WithdrawServiceImpl implements WithdrawService {
 
     private Account getAccountByIdOrThrow(int accountId) {
         return accountDAO.getAccountById(accountId)
-                .orElseThrow(() -> new BankEntityNotFound("Account not found"));
+                .orElseThrow(() -> new BankEntityNotFound(ACCOUNT_ERROR));
     }
 
     private void validateWithdrawAmount(double withdrawFunds, double balance) {
-        if (withdrawFunds <= 0.00 || withdrawFunds > balance) {
-            throw new BankTransactionError("Incorrect amount to withdraw.");
+        if (withdrawFunds <= ZERO || withdrawFunds > balance) {
+            throw new BankTransactionError(WITHDRAW_ERROR_MSG);
         }
     }
 

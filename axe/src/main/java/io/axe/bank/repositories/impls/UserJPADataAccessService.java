@@ -28,6 +28,11 @@ public class UserJPADataAccessService implements UserDAO {
     }
 
     @Override
+    public Optional<User> selectUserById(Integer userId) {
+        return userRepository.findById(userId);
+    }
+
+    @Override
     public void insertUser(User user) {
         userRepository.save(user);
     }
@@ -35,6 +40,11 @@ public class UserJPADataAccessService implements UserDAO {
     @Override
     public void updateUser(User user) {
         userRepository.save(user);
+    }
+
+    @Override
+    public void deleteUser(User user) {
+        userRepository.delete(user);
     }
 
     @Override

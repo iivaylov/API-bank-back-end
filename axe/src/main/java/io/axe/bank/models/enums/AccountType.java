@@ -1,5 +1,8 @@
 package io.axe.bank.models.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum AccountType {
     CACC("Current"),
 
@@ -13,10 +16,6 @@ public enum AccountType {
 
     AccountType(String name) {
         this.name = name;
-    }
-
-    public String getName() {
-        return name;
     }
 
     @Override

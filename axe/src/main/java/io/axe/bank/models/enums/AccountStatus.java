@@ -1,5 +1,8 @@
 package io.axe.bank.models.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum AccountStatus {
     ENABLED("enabled"),
 
@@ -11,10 +14,6 @@ public enum AccountStatus {
 
     AccountStatus(String name) {
         this.name = name;
-    }
-
-    public String getName() {
-        return name;
     }
 
     @Override
