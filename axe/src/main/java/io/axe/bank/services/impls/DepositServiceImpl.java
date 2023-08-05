@@ -21,18 +21,29 @@ public class DepositServiceImpl implements DepositService {
 
     @Override
     public void addMoneyToAccount(DepositRequest depositRequest, AccountDTO userAccount) {
-        Account account = accountDAO.getAccountById(userAccount.id())
-                .orElseThrow(() -> new BankEntityNotFound("Account not found"));
+        Account account = getAccountById(userAccount.id());
 
-        double balance = account.getBalance();
         double funds = depositRequest.getAmountToDeposit();
+        checkMinimumDepositAmount(funds);
 
-        if(funds <= 15.00){
+        updateAccountBalance(account, funds);
+    }
+
+    private Account getAccountById(Integer accountId) {
+        return accountDAO.getAccountById(accountId)
+                .orElseThrow(() -> new BankEntityNotFound("Account not found"));
+    }
+
+    private void checkMinimumDepositAmount(double amount) {
+        if (amount <= 15.00) {
             throw new BankTransactionError("You must deposit more than 15.00$");
         }
+    }
 
+    private void updateAccountBalance(Account account, double funds) {
+        double balance = account.getBalance();
         double newBalance = balance + funds;
-        double roundedValue = Math.round(newBalance*100.0)/100.0;
+        double roundedValue = Math.round(newBalance * 100.0) / 100.0;
         account.setBalance(roundedValue);
         accountDAO.updateAccount(account);
     }

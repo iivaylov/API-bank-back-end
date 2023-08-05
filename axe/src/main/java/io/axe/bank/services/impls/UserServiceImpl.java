@@ -57,23 +57,31 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void processRegistration(RegisterRequest registerRequest) {
-        if(userDAO.emailExists(registerRequest.getEmail())){
+        validateEmailNotExists(registerRequest.getEmail());
+        User user = createUserFromRequest(registerRequest);
+        userDAO.insertUser(user);
+    }
+
+    private void validateEmailNotExists(String email) {
+        if (userDAO.emailExists(email)) {
             throw new BankDuplicateEntity(EMAIL_EXISTS_MSG);
         }
+    }
 
-        User user = User.builder()
+    private User createUserFromRequest(RegisterRequest registerRequest) {
+        String encryptedPassword = passwordEncryptionDecryption.encryptPassword(registerRequest.getPassword());
+
+        return User.builder()
                 .firstName(registerRequest.getFirstname())
                 .lastName(registerRequest.getLastname())
                 .email(registerRequest.getEmail())
-                .password(passwordEncryptionDecryption.encryptPassword(registerRequest.getPassword()))
+                .password(encryptedPassword)
                 .phoneNumber(registerRequest.getPhoneNumber())
                 .townName(registerRequest.getTownName())
                 .country(registerRequest.getCountry())
                 .isDeleted(false)
                 .createdAt(LocalDateTime.now())
                 .build();
-
-        userDAO.insertUser(user);
     }
 
     @Override

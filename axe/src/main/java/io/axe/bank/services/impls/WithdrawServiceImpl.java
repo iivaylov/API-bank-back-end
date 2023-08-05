@@ -22,18 +22,30 @@ public class WithdrawServiceImpl implements WithdrawService {
 
     @Override
     public void withdrawMoneyFromAccount(WithdrawRequest withdrawRequest, AccountDTO userAccount) {
-        Account account = accountDAO.getAccountById(userAccount.id())
-                .orElseThrow(() -> new BankEntityNotFound("Account not found"));
+        Account account = getAccountByIdOrThrow(userAccount.id());
 
         double balance = account.getBalance();
         double withdrawFunds = withdrawRequest.getAmountToWithdraw();
 
-        if(withdrawFunds <= 0.00 || withdrawFunds > balance){
+        validateWithdrawAmount(withdrawFunds, balance);
+
+        updateAccountBalance(account, balance, withdrawFunds);
+    }
+
+    private Account getAccountByIdOrThrow(int accountId) {
+        return accountDAO.getAccountById(accountId)
+                .orElseThrow(() -> new BankEntityNotFound("Account not found"));
+    }
+
+    private void validateWithdrawAmount(double withdrawFunds, double balance) {
+        if (withdrawFunds <= 0.00 || withdrawFunds > balance) {
             throw new BankTransactionError("Incorrect amount to withdraw.");
         }
+    }
 
+    private void updateAccountBalance(Account account, double balance, double withdrawFunds) {
         double newBalance = balance - withdrawFunds;
-        double roundedValue = Math.round(newBalance*100.0)/100.0;
+        double roundedValue = Math.round(newBalance * 100.0) / 100.0;
         account.setBalance(roundedValue);
         accountDAO.updateAccount(account);
     }

@@ -23,28 +23,47 @@ public class TransferServiceImpl implements TransferService {
 
     @Override
     public void innerTransferFunds(TransferRequest transferRequest, AccountDTO fromAccount) {
-        Account senderAccount = accountDAO.getAccountById(fromAccount.id())
-                .orElseThrow(() -> new BankEntityNotFound("Account not found."));
+        Account senderAccount = getSenderAccount(fromAccount);
+        Account receiverAccount = getReceiverAccount(transferRequest);
 
-        String accountToIban = transferRequest.getAccountToIban();
-
-        Account receiverAccount = accountDAO.getAccountByIban(accountToIban)
-                .orElseThrow(() -> new BankEntityNotFound("Account not found."));
-
-        double senderBalance = senderAccount.getBalance();
         double amountToSend = transferRequest.getAmountToTransfer();
-        if(senderBalance < amountToSend){
+        checkSufficientBalance(senderAccount, amountToSend);
+
+        updateSenderBalance(senderAccount, amountToSend);
+        updateReceiverBalance(receiverAccount, amountToSend);
+    }
+
+    private Account getSenderAccount(AccountDTO fromAccount) {
+        return accountDAO.getAccountById(fromAccount.id())
+                .orElseThrow(() -> new BankEntityNotFound("Account not found."));
+    }
+
+    private Account getReceiverAccount(TransferRequest transferRequest) {
+        String accountToIban = transferRequest.getAccountToIban();
+        return accountDAO.getAccountByIban(accountToIban)
+                .orElseThrow(() -> new BankEntityNotFound("Account not found."));
+    }
+
+    private void checkSufficientBalance(Account senderAccount, double amountToSend) {
+        double senderBalance = senderAccount.getBalance();
+        if (senderBalance < amountToSend) {
             throw new BankTransactionError(TRANSFER_ERROR_MSG);
         }
+    }
+
+    private void updateSenderBalance(Account senderAccount, double amountToSend) {
+        double senderBalance = senderAccount.getBalance();
         double newSenderBalance = senderBalance - amountToSend;
-        double roundedBalance = Math.round(newSenderBalance*100.0)/100.0;
+        double roundedBalance = Math.round(newSenderBalance * 100.0) / 100.0;
         senderAccount.setBalance(roundedBalance);
-        accountDAO.updateAccount(receiverAccount);
+        accountDAO.updateAccount(senderAccount);
+    }
+
+    private void updateReceiverBalance(Account receiverAccount, double amountToSend) {
         double receiverBalance = receiverAccount.getBalance();
         double newReceiverBalance = receiverBalance + amountToSend;
-        double roundedReceiverBalance = Math.round(newReceiverBalance*100.0)/100.0;
+        double roundedReceiverBalance = Math.round(newReceiverBalance * 100.0) / 100.0;
         receiverAccount.setBalance(roundedReceiverBalance);
-
         accountDAO.updateAccount(receiverAccount);
     }
 }
