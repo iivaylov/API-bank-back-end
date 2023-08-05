@@ -35,6 +35,13 @@ public class UserServiceImpl implements UserService {
         this.passwordEncryptionDecryption = passwordEncryptionDecryption;
     }
 
+    private static void validateEmail(UserDTO currentUser, User userFromRepository, String message) {
+        String userEmail = userFromRepository.getEmail();
+        if (!userEmail.equals(currentUser.email())) {
+            throw new BankAuthError(message);
+        }
+    }
+
     @Override
     public UserDTO getUserByEmail(String email) {
         return userDAO
@@ -78,13 +85,6 @@ public class UserServiceImpl implements UserService {
         validateEmail(currentUser, userFromRepository, CLOSE_PROFILE_ERROR);
         userFromRepository.setClosedAt(LocalDateTime.now());
         userDAO.deleteUser(userFromRepository);
-    }
-
-    private static void validateEmail(UserDTO currentUser, User userFromRepository, String message) {
-        String userEmail = userFromRepository.getEmail();
-        if (!userEmail.equals(currentUser.email())) {
-            throw new BankAuthError(message);
-        }
     }
 
     private void validateEmailNotExists(String email) {
