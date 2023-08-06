@@ -1,5 +1,6 @@
 package io.axe.bank;
 
+import io.axe.bank.controllers.requests.DepositRequest;
 import io.axe.bank.controllers.requests.RegisterRequest;
 import io.axe.bank.controllers.requests.TransferRequest;
 import io.axe.bank.models.Account;
@@ -112,7 +113,12 @@ public class Helpers {
         TransferRequest transfer = new TransferRequest();
         transfer.setAccountToIban("receiver_account_iban");
         transfer.setAmountToTransfer(500.00);
-
         return transfer;
+    }
+
+    public static DepositRequest deposit() {
+        DepositRequest deposit = new DepositRequest();
+        deposit.setAmountToDeposit(50.00);
+        return deposit;
     }
 }
