@@ -2,7 +2,6 @@ package io.axe.bank.services;
 
 import io.axe.bank.Helpers;
 import io.axe.bank.controllers.requests.WithdrawRequest;
-import io.axe.bank.exceptions.BankEntityNotFound;
 import io.axe.bank.exceptions.BankTransactionError;
 import io.axe.bank.models.Account;
 import io.axe.bank.repositories.AccountDAO;
