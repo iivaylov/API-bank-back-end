@@ -50,6 +50,22 @@ public class Helpers {
         return mockUser;
     }
 
+    public static User createMockUserWithAccounts(){
+        User mockUser = new User();
+        mockUser.setId(1);
+        mockUser.setFirstName("Yetta");
+        mockUser.setLastName("Mccoy");
+        mockUser.setEmail("user@example.com");
+        mockUser.setPassword("SVI29IQF8YL");
+        mockUser.setPhoneNumber("1-562-388-7481");
+        mockUser.setTownName("Newport");
+        mockUser.setCountry("Russian Federation");
+        mockUser.setDeleted(false);
+        mockUser.setCreatedAt(LocalDateTime.now());
+        mockUser.setAccounts(List.of(createMockAccount()));
+        return mockUser;
+    }
+
     public static Account createMockAccount(){
         Account mockAccount = new Account();
         mockAccount.setId(1);
