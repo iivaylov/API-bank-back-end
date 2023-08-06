@@ -3,6 +3,7 @@ package io.axe.bank;
 import io.axe.bank.controllers.requests.DepositRequest;
 import io.axe.bank.controllers.requests.RegisterRequest;
 import io.axe.bank.controllers.requests.TransferRequest;
+import io.axe.bank.controllers.requests.WithdrawRequest;
 import io.axe.bank.models.Account;
 import io.axe.bank.models.User;
 import io.axe.bank.models.enums.AccountStatus;
@@ -136,5 +137,11 @@ public class Helpers {
         DepositRequest deposit = new DepositRequest();
         deposit.setAmountToDeposit(50.00);
         return deposit;
+    }
+
+    public static WithdrawRequest withdraw() {
+        WithdrawRequest withdraw = new WithdrawRequest();
+        withdraw.setAmountToWithdraw(50.00);
+        return withdraw;
     }
 }

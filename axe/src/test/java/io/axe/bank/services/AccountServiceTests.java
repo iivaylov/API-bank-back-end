@@ -1,10 +1,8 @@
 package io.axe.bank.services;
 
 import io.axe.bank.Helpers;
-import io.axe.bank.controllers.requests.OpenAccountRequest;
 import io.axe.bank.models.Account;
 import io.axe.bank.models.User;
-import io.axe.bank.models.enums.AccountType;
 import io.axe.bank.repositories.AccountDAO;
 import io.axe.bank.repositories.UserDAO;
 import io.axe.bank.services.dtos.AccountDTO;

@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.servers.Server;
         info = @Info(
                 contact = @Contact(
                         name = "AXE Bank",
-                        email= "iivaylov00@gmail.com"
+                        email = "iivaylov00@gmail.com"
                 ),
 
                 description = "OpenApi documentation for bank web application",
